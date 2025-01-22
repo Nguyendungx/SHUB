@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hoạt động tiêu biểu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#FF6600",
+            },
+          },
+        },
+      };
+
+      const imageData = [
+        { src: "carousel1.png", alt: "Hoạt động 1" },
+        { src: "carousel2.png", alt: "Hoạt động 2" },
+        { src: "carousel3.png", alt: "Hoạt động 3" },
+        { src: "carousel4.png", alt: "Hoạt động 4" },
+        { src: "carousel5.png", alt: "Hoạt động 5" },
+        { src: "carousel6.png", alt: "Hoạt động 6" },
+      ];
+
+      let currentIndex = 0;
+
+      function ImageComponent({ src, alt }) {
+        // Lấy chữ số cuối cùng từ tên file ảnh
+        const lastDigit = parseInt(src.match(/\d+/g)?.pop() || 0, 10);
+        const staggeredPosition =
+          lastDigit % 2 === 0 ? "-translate-y-4" : "translate-y-4"; 
+
+        return ` 
+          <div class="overflow-hidden transform ${staggeredPosition}">
+            <img src="${src}" alt="${alt}" class="w-full h-auto object-cover rounded-lg">
+          </div>
+        `;
+      }
+
+      function renderCarouselItems() {
+        const carouselTrack = document.getElementById("carousel-track");
+        carouselTrack.innerHTML = "";
+
+        const items = [];
+        const screenWidth = window.innerWidth;
+
+        let itemsToShow = 2; 
+
+        // Adjust itemsToShow based on screen width
+        if (screenWidth >= 640 && screenWidth < 768) {
+          itemsToShow = 3; // 3 items for small tablet screens
+        } else if (screenWidth >= 768 && screenWidth < 1024) {
+          itemsToShow = 4; // 4 items for larger tablets
+        } else if (screenWidth >= 1024 && screenWidth < 1280) {
+          itemsToShow = 5; // 5 items for small desktops
+        } else if (screenWidth >= 1280) {
+          itemsToShow = 6; // 6 items for large desktops
+        }
+
+        // Loop to render the required number of items
+        for (let i = 0; i < itemsToShow; i++) {
+          const index = (currentIndex + i) % imageData.length;
+          items.push(ImageComponent({ ...imageData[index], index: i }));
+        }
+
+        carouselTrack.innerHTML = items.join("");
+        // Add sliding effect
+        const track = document.getElementById("carousel-track");
+        track.style.transition = "transform 0.5s ease-in-out"; // Apply smooth transition
+      }
+
+      function scrollCarousel(direction) {
+        const track = document.getElementById("carousel-track");
+
+        // Disable transition temporarily
+        track.style.transition = "none";
+
+        currentIndex = (currentIndex + direction + imageData.length) % imageData.length;
+
+        // Trigger a reflow to ensure the transition works after setting "none"
+        track.offsetHeight; // Accessing this forces a reflow
+
+        // Re-enable transition after a very short delay
+        setTimeout(() => {
+          track.style.transition = "transform 0.5s ease-in-out"; // Re-enable transition
+          renderCarouselItems(); // Re-render with new items
+        }, 50); // Slight delay to allow reflow to take place
+      }
+
+      window.addEventListener("resize", renderCarouselItems); // Re-render on window resize
+      document.addEventListener("DOMContentLoaded", renderCarouselItems);
+    </script>
+  </head>
+  <body class="bg-gray-100">
+    <section class="py-12 bg-white">
+      <div class="max-w-7xl mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-4">
+          Hoạt động tiêu biểu từ cộng đồng giáo dục
+        </h2>
+        <p class="text-gray-600 mb-8">
+          Hình ảnh được chính những giáo viên từ khắp 3 miền ghi lại trong quá
+          trình giảng dạy, dạy học ứng dụng công nghệ SHub Classroom.
+        </p>
+
+        <!-- Carousel Container -->
+        <div class="relative">
+          <!-- Image Carousel -->
+          <div class="flex overflow-hidden justify-center" id="carousel">
+            <div
+              class="flex space-x-9 py-8"
+              id="carousel-track"
+            >
+
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <button
+            class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white text-black w-12 h-12 flex items-center justify-center rounded-full shadow-lg transition duration-300 focus:outline-none active:ring-4 active:ring-gray-500 active:ring-opacity-50 z-10"
+            onclick="scrollCarousel(-1)"
+          >
+            &#10094;
+          </button>
+          <button
+            class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white text-black w-12 h-12 flex items-center justify-center rounded-full shadow-lg transition duration-300 focus:outline-none active:ring-4 active:ring-gray-500 active:ring-opacity-50 z-10"
+            onclick="scrollCarousel(1)"
+          >
+            &#10095;
+          </button>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

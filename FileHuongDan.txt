@@ -1,0 +1,12 @@
+Node Version v20.6.1
+
+
+1.Task1 -- Hoàn thành
+- npm install
+- node index.js
+
+2.Task2 -- Hoàn thành
+
+3.Task3 -- Hoàn thành
+- npm install
+- node solution.js 
